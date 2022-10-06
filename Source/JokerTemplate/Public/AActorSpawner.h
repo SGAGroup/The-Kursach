@@ -29,17 +29,24 @@ public:
 
 
 public:
-	std::list<AActor*> enemies = {}; //All enemies;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		AActor* enemy;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<AActor> EnemyToSpawn;
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<AActor> ActorToStuck;
+	UPROPERTY(EditAnywhere)
 	float radius = 5.f; //spawnzone
-
+	UPROPERTY(EditAnywhere)
 	float deltaTime = 100; //ms
+	UPROPERTY(EditAnywhere)
 	int packCount = 10;
+
+	TArray<AActor*> StillAliveChildren;
 
 public:
 	void Spawn();
 
+	UFUNCTION(BlueprintCallable) void ExcludeChild(AActor* child);
+	void SpawnOne();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

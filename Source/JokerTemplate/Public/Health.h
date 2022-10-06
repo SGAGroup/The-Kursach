@@ -43,6 +43,8 @@ public:
 	UFUNCTION(BlueprintCallable) void ChangeHealth(int p_delta); //Меняет здоровье
 	UFUNCTION(BlueprintCallable) void TakeDamage(int Damage); //Меняет здоровье(получение урона)
 	UFUNCTION(BlueprintCallable) void TakeHeal(int Heal); //Меняет здоровье(восстановление)
+	UFUNCTION(BlueprintCallable) void SetDead(bool Status); //Устанавливает флаг смерти
+	UFUNCTION(BlueprintCallable) bool GetDeadStatus(); //Получает состояниие объекта(жив, мертв)
 };
 
 /*

@@ -5,7 +5,6 @@
 #include "Components/BoxComponent.h"
 
 
-
 AAActorSpawner::AAActorSpawner()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -14,32 +13,49 @@ AAActorSpawner::AAActorSpawner()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	SpawnVolume = CreateDefaultSubobject<UBoxComponent>(TEXT("SpawnVolume"));
 	SpawnVolume->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-	
+
 }
 
 void AAActorSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (int i = 0; i < 10; i++) {
-		Spawn();
-		UE_LOG(LogTemp, Warning, TEXT("Some warning message"));
-	}
+	StillAliveChildren.Empty();
+	Spawn();
 }
 
 void AAActorSpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UE_LOG(LogTemp, Warning, TEXT("Some warning message"));
-
-	
 }
 
 
 
 void AAActorSpawner::Spawn() {
-	FVector SpawnLocation = GetActorLocation();
-	FRotator SpawnRotation = GetActorRotation();
+	for (int i = 0; i < packCount; i++) {
+		SpawnOne();
+	}
+}
 
-	//GetWorld()->SpawnActor<>(SpawnLocation, SpawnRotation);
+void AAActorSpawner::SpawnOne() {
+	if (EnemyToSpawn == NULL) return;
+
+	FVector SpawnerLocation = GetActorLocation();
+	FRotator SpawnerRotation = GetActorRotation();
+
+	float randX, randY;
+	randX = FMath::FRandRange(-radius, radius);
+	randY = FMath::FRandRange(-radius, radius);
+
+	FVector SpawnLocation = FVector(SpawnerLocation.X + randX, SpawnerLocation.Y + randY, SpawnerLocation.Z);
+	AActor* new_enemy = GetWorld()->SpawnActor<AActor>(EnemyToSpawn, SpawnLocation, SpawnerRotation);
+	new_enemy->SetOwner(this);
+	StillAliveChildren.Add(new_enemy);
+}
+
+void AAActorSpawner::ExcludeChild(AActor* child) {
+	StillAliveChildren.Remove(child);
+	child->Destroy();
+	SpawnOne();
 }

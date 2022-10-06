@@ -18,7 +18,7 @@ void UHealth::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+
 }
 // Called every frame
 void UHealth::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -47,4 +47,11 @@ void UHealth::TakeDamage(int p_delta) {
 void UHealth::TakeHeal(int p_delta) {
 	ChangeHealth(p_delta);
 }
+void UHealth::SetDead(bool Status) {
+	isDead = Status;
+}
+bool UHealth::GetDeadStatus() {
+	return isDead;
+}
+
 
