@@ -7,6 +7,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "FlatSpawner.h"
+#include "Flat.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 // AJokerTemplateCharacter
@@ -56,6 +60,7 @@ AJokerTemplateCharacter::AJokerTemplateCharacter()
 //////////////////////////////////////////////////////////////////////////
 // Input
 
+
 void AJokerTemplateCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
@@ -63,6 +68,8 @@ void AJokerTemplateCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+	PlayerInputComponent->BindAction("SpawnActors", IE_Pressed, this, &AJokerTemplateCharacter::SpawnActors);
+	PlayerInputComponent->BindAction("DestroyActors", IE_Pressed, this, &AJokerTemplateCharacter::DestroyActors);
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &AJokerTemplateCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &AJokerTemplateCharacter::MoveRight);
 
@@ -77,6 +84,8 @@ void AJokerTemplateCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AJokerTemplateCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &AJokerTemplateCharacter::TouchStopped);
+
+	
 }
 
 void AJokerTemplateCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
@@ -99,6 +108,29 @@ void AJokerTemplateCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
+}
+
+void AJokerTemplateCharacter::SpawnActors()
+{
+
+	//Find the Actor Spawner in the Level, and invoke it's Spawn Actor function
+	AActor* ActorSpawnerTofind = UGameplayStatics::GetActorOfClass(GetWorld(), AFlatSpawner::StaticClass());
+	AFlatSpawner* ActorSpawnerReference = Cast<AFlatSpawner>(ActorSpawnerTofind);
+
+	if (ActorSpawnerReference)
+	{
+		ActorSpawnerReference->SpawnActor();
+	}
+}
+
+void AJokerTemplateCharacter::DestroyActors()
+{
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AFlat::StaticClass(), FoundActors);
+	for (AActor* ActorFound : FoundActors)
+	{
+		ActorFound->Destroy();
+	}
 }
 
 void AJokerTemplateCharacter::MoveForward(float Value)
