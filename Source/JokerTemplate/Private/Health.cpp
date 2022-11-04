@@ -37,18 +37,29 @@ int UHealth::GetMaxHealth() {
 }
 void UHealth::SetHealth(int p_value) {
 	health = p_value;
+
+	//Либо равно себе, либо ограничено MAX_HEALTH
+	health = FMath::Min(health, MAX_HEALTH);
+	if (health < 0) SetDead(true);
 }
 void UHealth::ChangeHealth(int p_delta) {
 	SetHealth(GetHealth() + p_delta);
+
+	OnHealthChanged.Broadcast();
 }
 void UHealth::TakeDamage(int p_delta) {
 	ChangeHealth(p_delta * -1);
+
+	OnTakeDamage.Broadcast();
 }
 void UHealth::TakeHeal(int p_delta) {
 	ChangeHealth(p_delta);
+
+	OnTakeHeal.Broadcast();
 }
 void UHealth::SetDead(bool Status) {
 	isDead = Status;
+	if (isDead) OnDead.Broadcast();
 }
 bool UHealth::GetDeadStatus() {
 	return isDead;
