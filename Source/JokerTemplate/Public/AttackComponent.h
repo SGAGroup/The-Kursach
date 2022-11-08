@@ -36,6 +36,10 @@ public:
 
 	UFUNCTION(BlueprintCallable) void AttackTargets();
 
+/*------опхбюрмше лерндш-------------------------------------------------------*/
+private:
+	bool isInCone(AActor* actorToCheck);
+
 /*------осакхвмше онкъ-------------------------------------------------------*/
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite) double widthAngle = 60; //in degrees
@@ -45,7 +49,7 @@ public:
 /*------опхбюрмше онкъ-------------------------------------------------------*/
 private:
 	USphereComponent* AttackingCollision;
-	TArray<TObjectPtr<AActor>> targetsToAttack;
+	TSet<AActor*> targetsToAttack;
 
 	FVector current = FVector(0, 0, 0);
 

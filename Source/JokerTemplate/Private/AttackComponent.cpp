@@ -31,8 +31,9 @@ UAttackComponent::UAttackComponent()
 		AttackingCollision->SetMaterialByName(TEXT("RED_DEBUG_MAT"), FoundMaterial.Object);
 	}
 	
-	AttackingCollision->OnComponentBeginOverlap.AddDynamic(this, &UAttackComponent::OnOverlapBegin);
-	AttackingCollision->OnComponentEndOverlap.AddDynamic(this, &UAttackComponent::OnOverlapEnd);
+	//AttackingCollision->OnComponentBeginOverlap.AddDynamic(this, &UAttackComponent::OnOverlapBegin);
+	//AttackingCollision->OnComponentEndOverlap.AddDynamic(this, &UAttackComponent::OnOverlapEnd);
+
 }
 
 // Called when the game starts
@@ -50,6 +51,7 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+
 	/*
 	if(this->GetOwner() != NULL)
 	DrawDebugSphere(GetWorld(), this->GetOwner()->GetActorLocation(), sphereRadius, 20, FColor::Cyan);
@@ -57,12 +59,39 @@ void UAttackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	FVector ownerPos = this->GetOwner()->GetActorLocation();
 	AttackingCollision->SetWorldLocation(ownerPos);
+	AttackingCollision->GetOverlappingActors(targetsToAttack);
+
+	//DrawDebugLine(GetWorld(), ownerPos, ownerPos + this->GetOwner()->GetActorForwardVector()*100, FColor::Emerald, true, -1, 0, 2);
+
+	for (auto target : targetsToAttack) {
+		if (target == nullptr) {
+			UE_LOG(LogTemp, Warning, TEXT("[Tick] target = nullptr"));
+			continue;
+		}
+
+		if (target == this->GetOwner()) continue;
+		if (!isInCone(target)) {
+			targetsToAttack.Remove(target);
+			continue;
+		}
+		FVector origin, extend;
+		target->GetActorBounds(true, origin, extend, false);
+		float width = extend.Length()/1.5;
+
+		DrawDebugSphere(GetWorld(), target->GetActorLocation(), width, 20, FColor::Cyan);
+
+	}
+
 }
 
 void UAttackComponent::AttackTargets() {
 	
-	for (auto targetptr : targetsToAttack) {
-		auto target = targetptr.Get();
+	for (auto target : targetsToAttack) {
+
+		if (target == nullptr) {
+			UE_LOG(LogTemp, Warning, TEXT("[Tick] target = nullptr"));
+			continue;
+		}
 
 		//Attack everyone except us
 		if (target == this->GetOwner()) continue;
@@ -82,16 +111,16 @@ void UAttackComponent::checkTargets() {
 	auto num = targetsToAttack.Num();
 	UE_LOG(LogTemp, Warning, TEXT("Active actors count: %d"), num);
 
+	size_t i = 0;
+	for (auto target : targetsToAttack) {
+		if (target == nullptr) {
+			UE_LOG(LogTemp, Warning, TEXT("[Tick] target = nullptr"));
+			continue;
+		}
 
-	for (size_t i = 0; i < num; ++i) {
-		auto target = targetsToAttack[i];
-		if (!target.IsNull()) {
-			FString str = target.Get()->GetName();
-			UE_LOG(LogTemp, Warning, TEXT("Actor[%d]: %s"), i, *str);
-		}
-		else {
-			UE_LOG(LogTemp, Warning, TEXT("ALERT!!!! Pointer is NULL"));
-		}
+		FString str = target->GetName();
+		UE_LOG(LogTemp, Warning, TEXT("Actor[%d]: %s"), i, *str)
+		i++;
 	}
 }
 
@@ -113,6 +142,10 @@ void UAttackComponent::OnOverlapBegin(
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
+	if (OtherActor == this->GetOwner()) return;
+
+	if (!isInCone(OtherActor)) return;
+
 	UE_LOG(LogTemp, Warning, TEXT("Begin overlap with: %s"), *OtherActor->GetName());
 	targetsToAttack.Add(OtherActor);
 }
@@ -124,6 +157,24 @@ void UAttackComponent::OnOverlapEnd(
 	class UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex) 
 {
+	if (OtherActor == this->GetOwner()) return;
+
 	UE_LOG(LogTemp, Warning, TEXT("End overlap with: %s"), *OtherActor->GetName());
 	targetsToAttack.Remove(OtherActor);
+}
+
+
+bool UAttackComponent::isInCone(AActor* actorToCheck) {
+	
+	FVector forward = this->GetOwner()->GetActorForwardVector();
+	FVector toOther = actorToCheck->GetActorLocation() - this->GetOwner()->GetActorLocation();
+
+	forward.Normalize(); toOther.Normalize();
+
+	double dotProduct = forward.Dot(toOther);
+
+
+	//double alpha = FMath::Acos(dotProduct) * 180 / PI;
+
+	return (dotProduct >= FMath::Cos(widthAngle*PI/180));
 }
