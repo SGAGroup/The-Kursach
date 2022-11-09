@@ -4,21 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "DrawDebugHelpers.h"
-
-#include "AttackComponent.generated.h"
-
-
+#include "AutoMove.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class JOKERTEMPLATE_API UAttackComponent : public UActorComponent
+class JOKERTEMPLATE_API UAutoMove : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UAttackComponent();
+	UAutoMove();
 
 protected:
 	// Called when the game starts
@@ -28,12 +24,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-/*------осакхвмше лерндш-------------------------------------------------------*/
-public: 
-	UFUNCTION(BlueprintCallable) virtual void PerformAttack();
-
-/*------осакхвмше онкъ-------------------------------------------------------*/
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite) double damage = 10.;
-
+	void SetProjectile();
+	
 };
