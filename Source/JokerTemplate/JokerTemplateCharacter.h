@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Health.h"
 #include "GameFramework/Character.h"
 #include "JokerTemplateCharacter.generated.h"
 
@@ -63,6 +64,21 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
+	void StartDamage();
+	UFUNCTION (BlueprintCallable, Category = "Health")
+	void TakeDamage(float _damageAmount);
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void Heal(float _healAmount);
+	void StartHealing();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	UHealth *HealthComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+		float playerHealth;
+	UFUNCTION()
+		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SwwepResult);
+	UPROPERTY(EditAnyWhere)
+		UShapeComponent* CollisionBox;
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

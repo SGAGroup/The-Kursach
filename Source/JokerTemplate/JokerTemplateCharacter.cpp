@@ -4,6 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "FirstAid.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -18,7 +19,10 @@ AJokerTemplateCharacter::AJokerTemplateCharacter()
 
 	// set our turn rate for input
 	TurnRateGamepad = 50.f;
-
+	HealthComponent = CreateDefaultSubobject<UHealth>(TEXT("HealthComponent"));
+	CollisionBox = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Root"));
+	CollisionBox->SetGenerateOverlapEvents(true);
+	CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AJokerTemplateCharacter::OnOverlap);
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -62,6 +66,9 @@ void AJokerTemplateCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+
+	PlayerInputComponent->BindAction("Heal", IE_Pressed, this, &AJokerTemplateCharacter::StartHealing);
+	PlayerInputComponent->BindAction("Damage", IE_Pressed, this, &AJokerTemplateCharacter::StartDamage);
 
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &AJokerTemplateCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &AJokerTemplateCharacter::MoveRight);
@@ -127,5 +134,24 @@ void AJokerTemplateCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+	}
+}
+
+void AJokerTemplateCharacter::StartDamage()
+{
+	HealthComponent->TakeDamage(20.00f);
+}
+
+
+void AJokerTemplateCharacter::StartHealing()
+{
+	HealthComponent->TakeHeal(0.02f);
+}
+
+void AJokerTemplateCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SwwepResult)
+{
+	if (OtherActor->IsA(AFirstAid::StaticClass))
+	{
+		OtherActor->Destroy();
 	}
 }

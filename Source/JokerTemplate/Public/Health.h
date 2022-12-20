@@ -43,21 +43,33 @@ public:
 
 /*------ПУБЛИЧНЫЕ МЕТОДЫ---------------------------------------------------------------------------------------*/
 public:
-	UFUNCTION(BlueprintPure) int GetHealth(); //Возвращает текущее здоровье
-	UFUNCTION(BlueprintPure) int GetMaxHealth(); //Возвращает максимальное здоровье
+	UFUNCTION(BlueprintPure) 
+		int GetHealth(); //Возвращает текущее здоровье
+	UFUNCTION(BlueprintPure) 
+		int GetMaxHealth(); //Возвращает максимальное здоровье
 
-	UFUNCTION(BlueprintCallable) void SetHealth(int NewHealth); //Устанавливает значение здоровья
-	UFUNCTION(BlueprintCallable) void ChangeHealth(int p_delta); //Меняет здоровье
-	UFUNCTION(BlueprintCallable) void TakeDamage(int Damage); //Меняет здоровье(получение урона)
-	UFUNCTION(BlueprintCallable) void TakeHeal(int Heal); //Меняет здоровье(восстановление)
-	UFUNCTION(BlueprintCallable) void SetDead(bool Status); //Устанавливает флаг смерти
-	UFUNCTION(BlueprintCallable) bool GetDeadStatus(); //Получает состояниие объекта(жив, мертв)
+	UFUNCTION(BlueprintCallable) 
+		void SetHealth(int NewHealth); //Устанавливает значение здоровья
+	UFUNCTION(BlueprintCallable) 
+		void ChangeHealth(int p_delta); //Меняет здоровье
+	UFUNCTION(BlueprintCallable) 
+		void TakeDamage(int Damage); //Меняет здоровье(получение урона)
+	UFUNCTION(BlueprintCallable) 
+		void TakeHeal(int Heal); //Меняет здоровье(восстановление)
+	UFUNCTION(BlueprintCallable) 
+		void SetDead(bool Status); //Устанавливает флаг смерти
+	UFUNCTION(BlueprintCallable) 
+		bool GetDeadStatus(); //Получает состояниие объекта(жив, мертв)
 
 
 /*------ПУБЛИЧНЫЕ СОБЫТИЯ(ДЕЛЕГАТЫ)---------------------------------------------------------------------------------------*/
 public:
-	UPROPERTY(BlueprintAssignable) FOnHealthChanged OnHealthChanged;
-	UPROPERTY(BlueprintAssignable) FOnDead OnDead;
-	UPROPERTY(BlueprintAssignable) FOnTakeDamage OnTakeDamage;
-	UPROPERTY(BlueprintAssignable) FOnTakeHeal OnTakeHeal;
+	UPROPERTY(BlueprintAssignable) 
+		FOnHealthChanged OnHealthChanged;
+	UPROPERTY(BlueprintAssignable) 
+		FOnDead OnDead;
+	UPROPERTY(BlueprintAssignable) 
+		FOnTakeDamage OnTakeDamage;
+	UPROPERTY(BlueprintAssignable) 
+		FOnTakeHeal OnTakeHeal;
 };
