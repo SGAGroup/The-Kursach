@@ -14,7 +14,7 @@ class AJokerTemplateGameMode : public AGameModeBase
 public:
 	AJokerTemplateGameMode();
 	UPROPERTY(EditAnywhere, Category = "Spawn")
-		TSubclassOf<class AFirstAid> FirstAidBlueprint;
+		TSubclassOf<class AMedBag> FirstAidBlueprint;
 	float spawnAidTimer;
 	virtual void Tick(float DeltaTime) override;
 	FVector GenerateRandomLocation();

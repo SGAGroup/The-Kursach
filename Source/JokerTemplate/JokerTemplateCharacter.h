@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Health.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
 #include "JokerTemplateCharacter.generated.h"
 
@@ -37,6 +38,10 @@ public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input)
 	float TurnRateGamepad;
+	void StartDamage();
+	void StartHealing();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+		UHealth* HealthComponent;
 
 protected:
 
@@ -64,21 +69,16 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
-	void StartDamage();
-	UFUNCTION (BlueprintCallable, Category = "Health")
-	void TakeDamage(float _damageAmount);
-	UFUNCTION(BlueprintCallable, Category = "Health")
-	void Heal(float _healAmount);
-	void StartHealing();
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-	UHealth *HealthComponent;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 		float playerHealth;
-	UFUNCTION()
-		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SwwepResult);
-	UPROPERTY(EditAnyWhere)
-		UShapeComponent* CollisionBox;
+	/*void OnVolumeEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	void OnVolumeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);*/
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		UBoxComponent* Volume;
+	void OnConstruction(const FTransform& Transform);
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

@@ -2,9 +2,10 @@
 
 #include "JokerTemplateCharacter.h"
 #include "Camera/CameraComponent.h"
-#include "Components/CapsuleComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/InputComponent.h"
-#include "FirstAid.h"
+#include "Components/CapsuleComponent.h"
+#include "MedBag.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -20,9 +21,13 @@ AJokerTemplateCharacter::AJokerTemplateCharacter()
 	// set our turn rate for input
 	TurnRateGamepad = 50.f;
 	HealthComponent = CreateDefaultSubobject<UHealth>(TEXT("HealthComponent"));
-	CollisionBox = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Root"));
-	CollisionBox->SetGenerateOverlapEvents(true);
-	CollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AJokerTemplateCharacter::OnOverlap);
+
+	
+		Volume = CreateDefaultSubobject<UBoxComponent>(TEXT("Volume"));
+		Volume->SetupAttachment(GetRootComponent());
+		Volume->InitBoxExtent(FVector(10.f, 10.f, 10.f));
+		Volume->SetCollisionResponseToAllChannels(ECR_Overlap);
+	
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -55,7 +60,17 @@ AJokerTemplateCharacter::AJokerTemplateCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+	//Volume->OnComponentBeginOverlap.AddDynamic(this, &AJokerTemplateCharacter::OnVolumeBeginOverlap);
+	//Volume->OnComponentEndOverlap.AddDynamic(this, &AJokerTemplateCharacter::OnVolumeEndOverlap);
 }
+void AJokerTemplateCharacter::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+	Volume->SetRelativeLocation(FVector(0));
+}
+	
+
+
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -145,13 +160,22 @@ void AJokerTemplateCharacter::StartDamage()
 
 void AJokerTemplateCharacter::StartHealing()
 {
-	HealthComponent->TakeHeal(0.02f);
+	HealthComponent->TakeHeal(15.00f);
 }
 
-void AJokerTemplateCharacter::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SwwepResult)
-{
-	if (OtherActor->IsA(AFirstAid::StaticClass))
-	{
-		OtherActor->Destroy();
-	}
-}
+//void AJokerTemplateCharacter::OnVolumeBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+//{	UE_LOG(LogTemp, Warning, TEXT("OVERLAP OCCURED"));
+//	if (Cast<AMedBag>(OtherActor))
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("OVERLAP OCCURED"));
+//		OtherActor->Destroy();
+//	}
+//}
+
+//void AJokerTemplateCharacter::OnVolumeEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+//{
+//	if (Cast<AMedBag>(OtherActor))
+//	{
+//		UE_LOG(LogTemp, Warning, TEXT("OVERLAP OCCURED"));
+//	}
+//}
