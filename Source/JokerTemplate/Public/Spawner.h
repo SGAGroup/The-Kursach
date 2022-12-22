@@ -28,7 +28,7 @@ public:
 	std::list<AActor> enemies = {}; //All enemies;
 	float radius = 5.f; //spawnzone
 
-	float deltaTime = 100; //ms
+	float deltaTime = 10; //s
 	int packCount = 10;
 
 public:

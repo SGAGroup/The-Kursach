@@ -20,6 +20,8 @@ void AAActorSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 
+	currentDt = deltaTime;
+
 	StillAliveChildren.Empty();
 	Spawn();
 }
@@ -28,6 +30,8 @@ void AAActorSpawner::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	UE_LOG(LogTemp, Warning, TEXT("Some warning message"));
+
+	UpdateTime(DeltaTime);
 }
 
 
@@ -58,4 +62,13 @@ void AAActorSpawner::ExcludeChild(AActor* child) {
 	StillAliveChildren.Remove(child);
 	child->Destroy();
 	SpawnOne();
+}
+
+void AAActorSpawner::UpdateTime(double dt)
+{
+	currentDt -= dt;
+	if (currentDt > 0) return;
+
+	currentDt = deltaTime;
+	Spawn();
 }

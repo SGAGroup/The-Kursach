@@ -64,6 +64,8 @@ void UProjectile::UpdateTime(double dt)
 {
 	timeToLive -= dt;
 	if (timeToLive < 0)
-		if (GetOwner())
+		if (GetOwner()) {
 			GetOwner()->Destroy();
+			DestroyComponent();
+		}
 }

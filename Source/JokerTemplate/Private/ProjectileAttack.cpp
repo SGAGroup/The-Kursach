@@ -32,7 +32,7 @@ void UProjectileAttack::PerformAttack() {
 		return;
 	}
 
-	FVector location = this->GetOwner()->GetActorLocation() + this->GetOwner()->GetActorForwardVector() * 100;
+	FVector location = this->GetOwner()->GetActorLocation() + this->GetOwner()->GetActorForwardVector() * 150;
 	FRotator rotation = this->GetOwner()->GetActorRotation();
 
 	AActor* spawned = GetWorld()->SpawnActor<AActor>(projectile, location, rotation);
