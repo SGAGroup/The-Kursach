@@ -54,6 +54,6 @@ FVector AJokerTemplateGameMode::GenerateRandomLocation()
 	float maximum = 1000;
 	location.X = FMath::RandRange(minimum, maximum);
 	location.Y = FMath::RandRange(minimum, maximum);
-	location.Z = 10;
+	location.Z = 20;
 	return location;
 }

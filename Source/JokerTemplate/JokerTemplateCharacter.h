@@ -31,7 +31,6 @@ private:
 	class USpringArmComponent* CameraBoom;
 
 
-
 public:
 	AJokerTemplateCharacter();
 

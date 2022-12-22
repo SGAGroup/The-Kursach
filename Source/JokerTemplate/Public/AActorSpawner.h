@@ -36,9 +36,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	float radius = 5.f; //spawnzone
 	UPROPERTY(EditAnywhere)
-	float deltaTime = 100; //ms
+	float deltaTime = 10; //s
 	UPROPERTY(EditAnywhere)
 	int packCount = 10;
+
+
+	float currentDt;
 
 	TArray<AActor*> StillAliveChildren;
 
@@ -47,6 +50,8 @@ public:
 
 	UFUNCTION(BlueprintCallable) void ExcludeChild(AActor* child);
 	void SpawnOne();
+
+	void UpdateTime(double dt);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

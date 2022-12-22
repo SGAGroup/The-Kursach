@@ -3,18 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
-#include "Spawner.generated.h"
+#include "AttackComponent.h"
+#include "DartProjectileAttack.generated.h"
 
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class JOKERTEMPLATE_API USpawner : public UActorComponent
+class JOKERTEMPLATE_API UDartProjectileAttack : public UAttackComponent
 {
 	GENERATED_BODY()
-
+		
 public:
-	// Sets default values for this component's properties
-	USpawner();
+	UDartProjectileAttack();
 
 protected:
 	// Called when the game starts
@@ -24,18 +23,15 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	//Методы
 public:
-	std::list<AActor> enemies = {}; //All enemies;
-	float radius = 5.f; //spawnzone
+	void PerformAttack() override;
 
-	float deltaTime = 10; //s
-	int packCount = 10;
-
+	//Поля
 public:
-	void Spawn();
+	UPROPERTY(EditAnywhere) TSubclassOf<AActor> projectile;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite) double speed = 20;
 
-
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UBoxComponent* SpawnVolume;
+private:
+	void assignSpeed(AActor* projectile);
 };
