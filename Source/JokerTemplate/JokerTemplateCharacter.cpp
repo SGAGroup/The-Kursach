@@ -49,7 +49,7 @@ AJokerTemplateCharacter::AJokerTemplateCharacter()
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetUsingAbsoluteRotation(true);
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 800.0f; // The camera follows at this distance behind the character	
+	CameraBoom->TargetArmLength = 1000.0f; // The camera follows at this distance behind the character	
 	CameraBoom->SetRelativeRotation(FRotator(-60.f, 0.f, 0.f));
 	CameraBoom->bDoCollisionTest = false;
 
@@ -72,7 +72,6 @@ void AJokerTemplateCharacter::OnConstruction(const FTransform& Transform)
 
 
 
-//////////////////////////////////////////////////////////////////////////
 // Input
 
 void AJokerTemplateCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -81,6 +80,8 @@ void AJokerTemplateCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	//PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &AJokerTemplateCharacter::Shoot);
+	//PlayerInputComponent->BindAction("Shoot", IE_Released, this, &AJokerTemplateCharacter::StopShooting);
 
 	PlayerInputComponent->BindAction("Heal", IE_Pressed, this, &AJokerTemplateCharacter::StartHealing);
 	PlayerInputComponent->BindAction("Damage", IE_Pressed, this, &AJokerTemplateCharacter::StartDamage);
@@ -88,17 +89,6 @@ void AJokerTemplateCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &AJokerTemplateCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &AJokerTemplateCharacter::MoveRight);
 
-	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
-	// "turn" handles devices that provide an absolute delta, such as a mouse.
-	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
-	PlayerInputComponent->BindAxis("Turn Right / Left Mouse", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("Turn Right / Left Gamepad", this, &AJokerTemplateCharacter::TurnAtRate);
-	PlayerInputComponent->BindAxis("Look Up / Down Mouse", this, &APawn::AddControllerPitchInput);
-	PlayerInputComponent->BindAxis("Look Up / Down Gamepad", this, &AJokerTemplateCharacter::LookUpAtRate);
-
-	// handle touch devices
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &AJokerTemplateCharacter::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &AJokerTemplateCharacter::TouchStopped);
 }
 
 void AJokerTemplateCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
@@ -111,17 +101,8 @@ void AJokerTemplateCharacter::TouchStopped(ETouchIndex::Type FingerIndex, FVecto
 	StopJumping();
 }
 
-void AJokerTemplateCharacter::TurnAtRate(float Rate)
-{
-	// calculate delta for this frame from the rate information
-	AddControllerYawInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
-}
 
-void AJokerTemplateCharacter::LookUpAtRate(float Rate)
-{
-	// calculate delta for this frame from the rate information
-	AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
-}
+
 
 void AJokerTemplateCharacter::MoveForward(float Value)
 {

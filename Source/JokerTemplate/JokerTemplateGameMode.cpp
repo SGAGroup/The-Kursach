@@ -1,18 +1,33 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "JokerTemplateGameMode.h"
+#include "JokerTemplateController.h"
 #include "JokerTemplateCharacter.h"
 #include "MedBag.h"
 #include "UObject/ConstructorHelpers.h"
 
 AJokerTemplateGameMode::AJokerTemplateGameMode()
-{PrimaryActorTick.bCanEverTick = true;
+{
 	// set default pawn class to our Blueprinted character
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter"));
-	if (PlayerPawnBPClass.Class != NULL)
+	PrimaryActorTick.bCanEverTick = true;
+	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter"));
+
+	// ��������� ���������� ������ �����������
+	PlayerControllerClass = AJokerTemplateController::StaticClass();
+
+	// ��������� ���������� pawn ������ ��������� ���������
+	//static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/ThirdPerson/Blueprints/BP_JokerTemplateCharacter"));
+	/*if (PlayerPawnBPClass.Class != NULL)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
-	}
+	*/
+
+	// ��������� ���������� ����������� ��������� �����������
+	/*static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Game/ThirdPerson/Blueprints/BP_JokerTemplateController"));
+	if (PlayerControllerBPClass.Class != NULL)
+	{
+		PlayerControllerClass = PlayerControllerBPClass.Class;
+	}*/
 }
 void AJokerTemplateGameMode::Tick(float DeltaTime)
 {
