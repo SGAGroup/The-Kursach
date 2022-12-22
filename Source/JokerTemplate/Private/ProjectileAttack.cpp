@@ -31,16 +31,8 @@ void UProjectileAttack::PerformAttack() {
 		UE_LOG(LogTemp, Warning, TEXT("[ProjectileAttack] GetDefaultObject nullptr"));
 		return;
 	}
-	
-	/*
-	UProjectile* moveComponent = projectile.GetDefaultObject()->FindComponentByClass<UProjectile>();
-	if (moveComponent == nullptr) {
-		UE_LOG(LogTemp, Warning, TEXT("[ProjectileAttack] projectile doesn't have autoMove. Can't attack"));
-		return;
-	}*/
 
-
-	FVector location = this->GetOwner()->GetActorLocation() + this->GetOwner()->GetActorForwardVector() * 30;
+	FVector location = this->GetOwner()->GetActorLocation() + this->GetOwner()->GetActorForwardVector() * 100;
 	FRotator rotation = this->GetOwner()->GetActorRotation();
 
 	AActor* spawned = GetWorld()->SpawnActor<AActor>(projectile, location, rotation);

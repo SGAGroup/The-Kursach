@@ -20,7 +20,7 @@ void UProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
+
 }
 
 
@@ -31,9 +31,11 @@ void UProjectile::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 	if (!initialized) return;
 
-	FVector newLocation = this->GetOwner()->GetActorLocation() + this->GetOwner()->GetActorForwardVector()*speed;
+	FVector newLocation = this->GetOwner()->GetActorLocation() + this->GetOwner()->GetActorForwardVector() * speed;
 	this->GetOwner()->SetActorLocation(newLocation);
-	
+
+
+	UpdateTime(DeltaTime);
 }
 
 
@@ -56,4 +58,12 @@ AActor* UProjectile::GetSourceActor() {
 
 void UProjectile::SetSourceActor(AActor* _sourceActor) {
 	sourceActor = _sourceActor;
+}
+
+void UProjectile::UpdateTime(double dt)
+{
+	timeToLive -= dt;
+	if (timeToLive < 0)
+		if (GetOwner())
+			GetOwner()->Destroy();
 }

@@ -25,10 +25,12 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
-private:
+protected:
 	bool initialized = false;
 	double speed = 0;
 	double damage = 0;
+
+	double timeToLive = 5;
 
 	AActor* sourceActor;
 
@@ -38,5 +40,5 @@ public:
 	UFUNCTION(BlueprintCallable) void SetSourceActor(AActor* _sourceActor);
 	UFUNCTION(BlueprintCallable) AActor* GetSourceActor();
 
-
+	void UpdateTime(double dt);
 };

@@ -1,6 +1,9 @@
 #include "MeleeAttack.h"
 #include "Health.h"
 
+#define DRAW_DEBUG
+#undef DRAW_DEBUG
+
 // Sets default values for this component's properties
 UMeleeAttack::UMeleeAttack()
 {
@@ -16,31 +19,25 @@ UMeleeAttack::UMeleeAttack()
 	AttackingCollision->SetHiddenInGame(false);
 	AttackingCollision->SetActive(true);
 
-
-
-
-	//AttackingCollision->SetCollisionProfileName("Trigger");
-
 	static ConstructorHelpers::FObjectFinder<UMaterial> FoundMaterial(TEXT("/Game/Materials/RED_DEBUG_MAT"));
 
 	if (FoundMaterial.Succeeded()) {
 		UE_LOG(LogTemp, Warning, TEXT("[UMeleeAttack] Material was found"));
 		AttackingCollision->SetMaterialByName(TEXT("RED_DEBUG_MAT"), FoundMaterial.Object);
 	}
-
 	//AttackingCollision->OnComponentBeginOverlap.AddDynamic(this, &UMeleeAttack::OnOverlapBegin);
 	//AttackingCollision->OnComponentEndOverlap.AddDynamic(this, &UMeleeAttack::OnOverlapEnd);
-
 }
 
 // Called when the game starts
 void UMeleeAttack::BeginPlay()
 {
 	Super::BeginPlay();
-
 	AttackingCollision->InitSphereRadius(sphereRadius);
 	AttackingCollision->SetSphereRadius(sphereRadius);
-
+	AttackingCollision->AttachToComponent(
+		GetOwner()->GetRootComponent(), 
+		FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called every frame
@@ -48,17 +45,7 @@ void UMeleeAttack::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-
-	/*
-	if(this->GetOwner() != NULL)
-	DrawDebugSphere(GetWorld(), this->GetOwner()->GetActorLocation(), sphereRadius, 20, FColor::Cyan);
-	*/
-
-	FVector ownerPos = this->GetOwner()->GetActorLocation();
-	AttackingCollision->SetWorldLocation(ownerPos);
 	AttackingCollision->GetOverlappingActors(targetsToAttack);
-
-	//DrawDebugLine(GetWorld(), ownerPos, ownerPos + this->GetOwner()->GetActorForwardVector()*100, FColor::Emerald, true, -1, 0, 2);
 
 	for (auto target : targetsToAttack) {
 		if (target == nullptr) {
@@ -75,10 +62,10 @@ void UMeleeAttack::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 		target->GetActorBounds(true, origin, extend, false);
 		float width = extend.Length() / 1.5;
 
-		DrawDebugSphere(GetWorld(), target->GetActorLocation(), width, 20, FColor::Cyan);
-
+		#ifdef DRAW_DEBUG 
+			DrawDebugSphere(GetWorld(), target->GetActorLocation(), width, 20, FColor::Cyan);
+		#endif
 	}
-
 }
 
 void UMeleeAttack::PerformAttack() 
@@ -90,17 +77,14 @@ void UMeleeAttack::PerformAttack()
 			UE_LOG(LogTemp, Warning, TEXT("[Tick] target = nullptr"));
 			continue;
 		}
-
 		//Attack everyone except us
 		if (target == this->GetOwner()) continue;
-
 		//Tries to get health component from each target
 		UHealth* healthComponent = target->FindComponentByClass<UHealth>();
 		if (healthComponent != nullptr) { //if health component exists
 			healthComponent->TakeDamage(damage); //Apply damage
 		}
 	}
-
 }
 
 
@@ -123,16 +107,10 @@ void UMeleeAttack::checkTargets() {
 }
 
 bool UMeleeAttack::isInCone(AActor* actorToCheck) {
-
 	FVector forward = this->GetOwner()->GetActorForwardVector();
 	FVector toOther = actorToCheck->GetActorLocation() - this->GetOwner()->GetActorLocation();
-
 	forward.Normalize(); toOther.Normalize();
-
 	double dotProduct = forward.Dot(toOther);
-
-
-	//double alpha = FMath::Acos(dotProduct) * 180 / PI;
 
 	return (dotProduct >= FMath::Cos(widthAngle * PI / 180));
 }
