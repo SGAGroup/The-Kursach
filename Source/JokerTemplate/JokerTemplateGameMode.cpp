@@ -5,6 +5,8 @@
 #include "JokerTemplateCharacter.h"
 #include "MedBag.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
+
 
 AJokerTemplateGameMode::AJokerTemplateGameMode()
 {
@@ -35,7 +37,7 @@ void AJokerTemplateGameMode::Tick(float DeltaTime)
 	spawnAidTimer -= DeltaTime;
 	if (spawnAidTimer < 0.0f)
 	{
-		float NumberOfSecondsBetweenSpawn = 1.0f;
+		float NumberOfSecondsBetweenSpawn = 2.0f;
 		spawnAidTimer = NumberOfSecondsBetweenSpawn;
 		UWorld* world = GetWorld();
 		if (world)
@@ -49,11 +51,15 @@ void AJokerTemplateGameMode::Tick(float DeltaTime)
 
 FVector AJokerTemplateGameMode::GenerateRandomLocation()
 {
+	auto player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0)->GetActorLocation();
+
 	FVector location;
-	float minimum = 1;
+	float minimum = 350;
 	float maximum = 1000;
 	location.X = FMath::RandRange(minimum, maximum);
 	location.Y = FMath::RandRange(minimum, maximum);
-	location.Z = 20;
+	location.Z = 0;
+
+	location = location + player;
 	return location;
 }
